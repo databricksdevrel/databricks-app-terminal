@@ -1,9 +1,12 @@
+export type TerminalTypeAuthPolicy = "both" | "user" | "m2m";
+
 export type TerminalType = {
   id: string;
   name: string;
   description?: string;
   badge?: string;
   icon?: string;
+  authPolicy: TerminalTypeAuthPolicy;
   default: boolean;
   builtIn: boolean;
 };

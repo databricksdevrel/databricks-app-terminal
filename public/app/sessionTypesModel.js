@@ -2,6 +2,10 @@ function normalizeTypeId(typeId) {
   return typeof typeId === "string" && typeId.length > 0 ? typeId : "terminal";
 }
 
+function normalizeAuthPolicy(policy) {
+  return policy === "user" || policy === "m2m" ? policy : "both";
+}
+
 function sortedSessionTypes(list) {
   return [...list].sort((a, b) => {
     if (a.default) {
@@ -22,6 +26,7 @@ function fallbackType(typeId) {
     description: "",
     badge: normalized,
     icon: undefined,
+    authPolicy: "both",
     default: false,
     builtIn: false,
   };
@@ -47,6 +52,7 @@ export function createSessionTypesModel(state) {
           description: type.description || "",
           badge: type.badge || type.id || "terminal",
           icon: typeof type.icon === "string" && type.icon.length > 0 ? type.icon : undefined,
+          authPolicy: normalizeAuthPolicy(type.authPolicy),
           default: Boolean(type.default),
           builtIn: Boolean(type.builtIn),
         })),
@@ -57,6 +63,24 @@ export function createSessionTypesModel(state) {
       const normalized = normalizeTypeId(typeId);
       const found = state.sessionTypes.find((type) => type.id === normalized);
       return found || fallbackType(normalized);
+    },
+
+    authPolicyForType(typeId) {
+      const type = this.findType(typeId);
+      return normalizeAuthPolicy(type.authPolicy);
+    },
+
+    allowsAuthMode(typeId, mode) {
+      const normalizedMode = mode === "user" ? "user" : "m2m";
+      const policy = this.authPolicyForType(typeId);
+      if (policy === "both") {
+        return true;
+      }
+      return policy === normalizedMode;
+    },
+
+    isAuthToggleEnabled(typeId) {
+      return this.authPolicyForType(typeId) === "both";
     },
 
     defaultTypeId() {

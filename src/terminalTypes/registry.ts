@@ -2,7 +2,12 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { z } from "zod";
 import type { Logger } from "../logging/logger.js";
-import type { ResolvedTerminalType, TerminalType, TerminalTypeRegistry } from "./types.js";
+import type {
+  ResolvedTerminalType,
+  TerminalType,
+  TerminalTypeAuthPolicy,
+  TerminalTypeRegistry,
+} from "./types.js";
 
 const BASE_TERMINAL_TYPE: ResolvedTerminalType = {
   id: "terminal",
@@ -10,11 +15,14 @@ const BASE_TERMINAL_TYPE: ResolvedTerminalType = {
   description: "Plain shell session",
   badge: "terminal",
   icon: "⌂",
+  authPolicy: "both",
   default: true,
   builtIn: true,
 };
 
 const typeIdPattern = /^[a-z0-9][a-z0-9-_]{0,63}$/;
+
+const authPolicyValues = ["both", "user", "m2m"] as const satisfies readonly TerminalTypeAuthPolicy[];
 
 const terminalTypeManifestSchema = z.object({
   id: z.string().regex(typeIdPattern).optional(),
@@ -22,6 +30,7 @@ const terminalTypeManifestSchema = z.object({
   description: z.string().min(1).max(160).optional(),
   badge: z.string().min(1).max(24).optional(),
   icon: z.string().min(1).max(8).optional(),
+  authPolicy: z.enum(authPolicyValues).optional(),
   entrypoint: z.string().min(1).max(200).optional(),
 });
 
@@ -144,6 +153,7 @@ export async function loadTerminalTypeRegistry(
       description: manifest.description,
       badge: manifest.badge || id,
       icon: manifest.icon,
+      authPolicy: manifest.authPolicy || "both",
       builtIn: false,
       default: false,
       entrypointPath,
