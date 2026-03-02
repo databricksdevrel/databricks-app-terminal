@@ -24,6 +24,7 @@ terminal-types/<type-id>/
   "description": "Launch Claude Code in the terminal",
   "badge": "claude",
   "icon": "✶",
+  "authPolicy": "both",
   "entrypoint": "launch.sh"
 }
 ```
@@ -35,6 +36,10 @@ Fields:
 - `badge` (optional): short tab badge label
 - `icon` (optional): short icon/logo string (e.g. unicode glyph) used in TUI picker and tab badge
   - can be a private-use glyph when backed by a bundled icon font
+- `authPolicy` (optional): auth-mode policy for sessions of this type
+  - `both` (default): users can toggle between `m2m` and `user`
+  - `user`: pinned to `user` mode (toggle disabled)
+  - `m2m`: pinned to `m2m` mode (toggle disabled)
 - `entrypoint` (optional): launch script path relative to type folder, default `launch.sh`
 
 ## `launch.sh`
