@@ -2,7 +2,7 @@
 
 Databricks App Terminal is a multi-session web terminal for Databricks Apps.
 
-![Auth mode switching demo](./images/auth.gif)
+![Auth mode switching demo](./images/terminal.gif)
 
 When running inside a Databricks App, terminal commands execute under the app's service principal identity. Databricks CLI is available in the runtime and works with app M2M auth out of the box.
 
